@@ -1,0 +1,51 @@
+{% extends 'base.html'%}
+{% block body %}
+
+
+{% load static%}
+Update Price by Category
+<div class="container">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" onclick="this.parentElement.style.display='none';"
+        role="alert">
+        {{message}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+</div>
+
+
+<section class="">
+    <div class="form-container">
+
+        <div class="image-holder"></div>   
+          <table class="table">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Category Name</th>
+                <th scope="col">Markup</th>
+                <th scope="col">Update</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for stud in categorys %}
+                <tr>
+                  <form action="priceupdatebycategorysubmit" method="post">
+                    {% csrf_token %}
+                    <span><input type="text" style="display: none;" name="key" value="{{stud.cID}}"></span>
+                    <td><span class="">{{stud.cName}}</span></td>
+                    <td><span class=""><input type="text" name="CategoryNAME"></span></td>
+                    <td><button class="btn  btn-secondary" type="submit">Update</button></td>
+                  </form>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+    </div>
+</section>
+{% endblock body %}

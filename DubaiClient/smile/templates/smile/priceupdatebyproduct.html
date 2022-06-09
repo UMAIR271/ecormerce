@@ -1,0 +1,51 @@
+Update Price by Product
+<div class="container">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" onclick="this.parentElement.style.display='none';"
+        role="alert">
+        {{message}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+</div>
+
+
+<section class="">
+    <div class="form-container">
+
+        <div class="image-holder"></div>
+        <form action="priceupdatebyproductsubmit" method="post">
+            <h2 class="text-center"><strong>Enter Details </strong> </h2>
+
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Enter User Name</label>
+                <input class="form-control" id="username" name="username" placeholder="User Name">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Enter Product Name</label>
+                <input class="form-control" id="productname" name="productname" placeholder="Product Name">
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Enter Price Update Percentage </label>
+                <input class="form-control" id="updatepricebypercent" name="updatepricebypercent"
+                    placeholder="Update Price By Percent ">
+            </div>
+
+
+            <div class="form-group">
+                <div class="form-check">
+
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-lg">Upate Price For User </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

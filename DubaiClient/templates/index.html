@@ -1,0 +1,240 @@
+{% extends 'base.html'%}
+{% block body %}
+
+
+{% load static%}
+
+
+
+<div class="container">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" onclick="this.parentElement.style.display='none';"
+        role="alert">
+        {{message}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+</div>
+
+
+
+{% if user.is_authenticated%}
+
+<div class="row">
+
+    <div class="container">
+        <h1 class="display-4 text-left">Welcome {{request.user}} </h1>
+        <div class="col-12 mt-5">
+
+
+            {% for category in category %}
+            <a class="btn btn btn-secondary btn-lg " style="width: 49%; padding: 5px; margin: 2px;"
+                href="{% url 'showProduct' category.cID  %}">
+                {{category.cName}}</a>
+            {%endfor%}
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row" style="padding-top: 160px;">
+    <div class="container">
+        <table class="table">
+            <thead class="">
+                <tr>
+                    <th scope="col">Product NAME</th>
+                    <th scope="col">Product discription</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Qunatity</th>
+                    <th scope="col">Order</th>
+                </tr>
+            </thead>
+            <tbody>
+                <form action="{% url 'update_price_cus'  %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for product in products %}
+                    <tr>
+                        <td><span class="form-control">{{product.pName}} </span></td>
+                        <td><span class="form-control">{{product.pDescription}}</span></td>
+                        <td><span class="form-control">{{product.pPrice}} </span></td>
+                        <td><input id="qty{{product.Id}}" class="form-control" type="text"></td>
+
+                        <td><button type="button" id="{{product.Id}}" type=""
+                                class=" cart btn btn-dark btn-lg form-control ">Add to Cart</button></td>
+
+
+                    </tr>
+                    {%endfor%}
+                </form>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<br>
+
+
+<div style="display: none ;">
+
+    <div class="container d-flex justify-content-center mt-50 mb-50">
+
+        <div class="row">
+
+
+            {% for product in products %}
+
+            <div class="col-md-4 mt-2">
+
+
+                <div class="card">
+
+
+
+                    <h6 class="font-weight-semibold mb-2" id="name{{product.Id}}"> {{product.pName}}</h6>
+
+                    <a href="#" class="text-muted" data-abc="true">{{product.pCategories.cName}}</a>
+
+
+                    <h3 class="mb-0 font-weight-semibold"> <span id="price{{product.Id}}">{{ product.pPrice}}</span>AED
+                    </h3>
+
+
+                    <button id="{{product.Id}}" type="button" class=" cart btn bg-cart "><i
+                            class="fa fa-cart-plus mr-2"></i> Add to
+                        cart</button>
+                    <a href="/smile/product/{{product.Id}}"> View Product</a>
+
+
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+        {%endfor%}
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+</div>
+
+{%else%}
+<div align="center"> Please Login to See products</div>
+
+{%endif%}
+
+
+
+
+
+
+
+
+
+
+
+{% endblock body %}
+
+
+
+
+{% block js %}
+<script>
+
+    if (localStorage.getItem('cart') == null) {
+        var cart = {};
+        localStorage.setItem('cart', JSON.stringify(cart))
+        console.log("inside if ");
+    }
+    else {
+        cart = JSON.parse(localStorage.getItem('cart'));
+        localStorage.setItem('cart', JSON.stringify(cart))
+
+        var sum = 0
+        for (var item in cart) {
+            sum = sum + Number(cart[item][0]);
+
+        }
+        document.getElementById('cart').innerHTML = sum;
+    }
+    $(".cart").click(function () {
+        console.log("Clicked");
+        var idstr = this.id.toString();
+        if (cart[idstr] != undefined) {
+            qty = cart[idstr][0] + 1;
+            qty = document.getElementById('qty' + idstr).value;
+            name = document.getElementById('name' + idstr).innerHTML;
+            price = document.getElementById('price' + idstr).innerHTML;
+            price = qty * price
+            console.log(price)
+            console.log("here")
+            cart[idstr] = [qty, name, price];
+        }
+        else {
+            qty = 1
+            qty = document.getElementById('qty' + idstr).value;
+            price = document.getElementById('price' + idstr).innerHTML;
+            name = document.getElementById('name' + idstr).innerHTML;
+            cart[idstr] = [qty, name, price];
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        var sum = 0
+        for (var item in cart) {
+            sum = sum + Number(cart[item][0]);
+        }
+        document.getElementById('cart').innerHTML = sum;
+
+        updatePopover(cart);
+
+    });
+    $('#popcart').popover();
+    document.getElementById("popcart").setAttribute('data-content', '<h5>Cart for your items in my shopping cart</h5>');
+    updatePopover(cart);
+    function updatePopover(cart) {
+
+        var popStr = "";
+        popStr = popStr + "<h5> Cart for your items in my shopping cart </h5><div class='mx-2 my-2'>";
+        var i = 1;
+        for (var item in cart) {
+
+
+            popStr = popStr + "<b>" + i + "</b>. ";
+            popStr = popStr + document.getElementById('name' + item).innerHTML.slice(0, 19) + "... Qty: " + cart[item][0] + "... Price: " + cart[item][2] + '<br>';
+            i = i + 1;
+        }
+        popStr = popStr + "</div> <a href='/smile/checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a> <button class='btn btn-primary' onclick='clearCart()' id ='clearCart'>Clear Cart</button>    "
+        document.getElementById('popcart').setAttribute('data-content', popStr);
+        $('#popcart').popover('show');
+    }
+
+
+
+    function clearCart() {
+        localStorage.clear();
+        cart = {};
+        $('#popcart').popover();
+        document.getElementById("popcart").setAttribute('data-content', '<h5>Your Cart Items will show Here. </h5>');
+
+    }
+
+    $('#popcart').popover('hide');
+</script>
+
+{% endblock js %}

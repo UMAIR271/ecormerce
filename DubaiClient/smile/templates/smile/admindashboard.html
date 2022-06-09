@@ -1,0 +1,212 @@
+{% extends 'base.html'%}
+{% block body %}
+
+
+{% load static%}
+<h1> Wellcome Super {{request.user}} </h1>
+<div class="float-right">
+  <a class="btn btn-success mr-3" href="{% url 'addnewuser' %}"> Add New User</a>
+  <a class="btn btn-success mr-3" href="{% url 'addNewProduct' %}"> Add Product</a>
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2">
+      <form action="" method="post">
+        {% csrf_token %}
+        <div class="list-group" id="list-tab" role="tablist">
+          <a class="list-group-item " id="list-home-list" href="{% url 'view_order' %}">Order</a>
+          <a class="list-group-item" id="list-messages-list" href="{% url 'productdisplay'%}">Product</a>
+          <a class="list-group-item" id="list-profile-list" href="{% url 'view_Category'%}">Category</a>
+          <a class="list-group-item " id="list-settings-list" href="{% url 'PPB_customer'%}">Product price by
+            customer</a>
+          <a class="list-group-item" href="{% url 'priceupdatebycategory' %}">Category Markup</a>
+          <a class="list-group-item" href="{% url 'priceupdatebyproduct' %}"> Update Product Price for User by
+              Product</a>
+          <a class="list-group-item" href="{% url 'resetpricesforalluser' %}"> Reset Prices for All Users</a>
+        </div>
+
+      </form>
+    </div>
+    <div class="col-10">
+      {% if Corder %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col"> Order ID</th>
+            <th scope="col"> Customer Name</th>
+            <th scope="col"> Order Details </th>
+            <th scope="col">City</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in Corder %}
+          <tr>
+            <form action="UPB_customer" method="post">
+              {% csrf_token %}
+
+
+              <td><span class="form-control">{{order.order_id}}</span></td>
+              <td><span class="form-control">{{order.name}}</span></td>
+              <td><span class="form-control" style="height: auto !important;">{{order.OrderDetails}}</span></td>
+              <td><span class="form-control">{{order.city}}</span></td>
+
+
+              <td><button class="btn  btn-secondary" style=" display: none;" type="submit">Update</button></td>
+            </form>
+
+
+
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+
+      {% elif productdata %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col"> Product NAME</th>
+            <th scope="col"> Product Description</th>
+            <th scope="col"> Product Price</th>
+            <th scope="col">product Qunatity</th>
+            <th scope="col">Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stud in productdata %}
+          <tr>
+            <form action="productupdate" method="post">
+              {% csrf_token %}
+              <span><input type="text" style="display: none;" name="key" value="{{stud.Id}}"></span>
+              <td><span class=""><input type="text" name="ProductNAME" value="{{stud.pName}}"></span></td>
+              <td><span class="" ><input type="text" value="{{stud.pDescription}}"name="ProductDescription" ></span></td>
+              <td><span class=""><input type="text" value="{{stud.pPrice}}"name="productPrice"></span></td>
+              <td><span class=""><input type="text" name="productQunatity"value="{{stud.pQTY}}"></span></td>
+              <td><button class="btn  btn-secondary" type="submit">Update</button></td>
+            </form>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+      {% elif C_Category %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col"> Category NAME</th>
+            <th scope="col">Edit Category NAME</th>
+            <th scope="col">Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stud in C_Category %}
+          <tr>
+            <form action="updatecatagory" method="post">
+              {% csrf_token %}
+              <span><input type="text" style="display: none;" name="key" value="{{stud.cID}}"></span>
+              <td><span class="" >{{stud.cName}}</span></td>
+              <td><span class=""><input type="text" name="CategoryNAME"></span></td>
+              <td><button class="btn  btn-secondary" type="submit">Update</button></td>
+            </form>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+      {% elif categorys %}
+      <div>{{category1.cID}}</div>
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Category Name</th>
+            <th scope="col">Markup</th>
+            <th scope="col">Update</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for stud in categorys %}
+            <tr>
+              <form action="priceupdatebycategorysubmit" method="post">
+                {% csrf_token %}
+                <span><input type="text" style="display: none;" name="key" value="{{stud.cID}}"></span>
+                <td><span class="">{{stud.cName}}</span></td>
+                <td><span class=""><input type="text" name="CategoryMarkup"></span></td>
+                <td><button class="btn  btn-secondary" type="submit">Update</button></td>
+              </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+      <table class="table">
+        <div><h2>For specific user</h2></div>
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">User Name</th>
+            <th scope="col">Category</th>
+            <th scope="col">Markup</th>
+            <th scope="col">Update</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <form action="priceupdatebycategoryandusersubmit" method="post">
+              {% csrf_token %}
+          
+              <td><span class=""><input type="text" name="UserName"></span></td>
+              <td><span class=""><input type="text" name="CategoryNAME"></span></td>
+              <td><span class=""><input type="text" name="CategoryMarkup"></span></td>
+              <td><button class="btn  btn-secondary" type="submit">Update</button></td>
+            </form>
+          </tr>
+      </tbody>
+      </table>
+      
+      {% elif displayproductbycustomer %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="display: none;"> Product ID</th>
+            <th scope="col" style="display: none;"> User Name</th>
+
+            <th scope="col"> Product Name</th>
+            <th scope="col"> Markup By Location</th>
+            <th scope="col">Markup By Category</th>
+            <th scope="col">Markup By Product</th>
+            <th scope="col">Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in displayproductbycustomer %}
+          <tr>
+            <form action="UPB_customer" method="post">
+              {% csrf_token %}
+              <td style="display: none;"> <input type="text" name="key" value="{{product.pplID}}"></td>
+              <td style="display:none;"> <input type="text" name="usersearched" value="{{customername}}"></td>
+              <th scope="row"> {{product.pName}}</th>
+
+              <td><input type="text" class="form-control" name="lMarkup" value="{{product.lMarkup}}"></td>
+              <td><input type="text" class="form-control" name="cMarkup" value="{{product.cMarkup}}"></td>
+              <td><input type="text" class="form-control" name="pMarkup" value="{{product.pMarkup}}"></td>
+              <td><button class="btn  btn-secondary" type="submit">Update</button></td>
+            </form>
+
+
+
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+
+      {% endif %}
+
+
+    </div>
+  </div>
+</div>
+
+
+{% endblock body %}

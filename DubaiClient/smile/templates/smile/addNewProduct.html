@@ -1,0 +1,23 @@
+{% extends 'base.html'%}
+{% block body %}
+
+
+{% load static%}
+<h1> Wellcome {{request.user}}1 </h1>
+
+
+<section class="contact-clean">
+    <form action="submitNewProduct" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2 class="text-center">Add New Product</h2>
+        {{form}}
+        <div class="form-group">
+
+            <button type="submit" class="btn btn-primary btn-lg">Add Product</button>
+
+        </div>
+    </form>
+</section>
+
+
+{% endblock body %}
